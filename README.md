@@ -101,14 +101,28 @@ To set up **MacOS** for native development, complete the following steps:
 
 ### Docker
 
+#### Pre-requisites
+
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+  - Note that you'll need a relatively recent version
+- Install [caddy](https://caddyserver.com/docs/install)
+
 For development with **Docker**, complete the following steps:
 
-- Install Docker Desktop
-- Run `docker compose -f .devcontainer/docker-compose.yml up -d`
-- Run `docker compose -f .devcontainer/docker-compose.yml exec app .devcontainer/post-create.sh`
-- Finally, run `docker compose -f .devcontainer/docker-compose.yml exec app bin/dev`
+- Setup your config
+  - copy `.env.production.sample` to `.env.production`
+  - edit `.env.production` and update any values. At least set `LOCAL_DOMAIN`
+- Run `docker compose pull`
+- Setup your secrets
+  - Run `bin/gen_secrets > .env.secrets`
+- Run `docker compose up -d db`
+- Run `docker compose run --rm web bundle exec rails db:setup`
+- Run `docker compose up -d`
+- Setup caddy proxy
+  - edit `Caddyfile`. Set the domain to the same value as `LOCAL_DOMAIN`
+  - Run `caddy run`
 
-If you are using an IDE with [support for the Development Container specification](https://containers.dev/supporting), it will run the above `docker compose` commands automatically. For **Visual Studio Code** this requires the [Dev Container extension](https://containers.dev/supporting#dev-containers).
+If everything works correctly, you should be able to visit the domain you set for `LOCAL_DOMAIN` in your browser and see the mastodon UI! You may need to add the domain to your `/etc/hosts` or however you add local domains.
 
 ### GitHub Codespaces
 
