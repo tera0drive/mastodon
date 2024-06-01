@@ -1,0 +1,18 @@
+# Stop mastodon containers
+docker ps -aq --filter "name=mastodon" | xargs docker stop
+
+# File storage
+rm -rf ./public/system
+
+# Redis
+rm -rf ./redis
+
+# Database
+rm -rf ./postgres14
+
+# Reset docker environment
+docker system prune --force --filter "label=name=mastodon"
+docker ps -aqf name=mastodon | xargs docker rm
+
+# This should be an empty list
+docker ps -af name=mastodon
