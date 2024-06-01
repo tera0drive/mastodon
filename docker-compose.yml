@@ -3,24 +3,26 @@ services:
     restart: always
     image: postgres:14-alpine
     shm_size: 256mb
-    networks:
-      - internal_network
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
     volumes:
       - ./postgres14:/var/lib/postgresql/data
     environment:
       - 'POSTGRES_HOST_AUTH_METHOD=trust'
+      - 'POSTGRES_DB=mastodon_production'
+      - 'POSTGRES_USER=mastodon'
+    ports:
+      - '35432:5432'
 
   redis:
     restart: always
     image: redis:7-alpine
-    networks:
-      - internal_network
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
     volumes:
       - ./redis:/data
+    ports:
+      - '36379:6379'
 
   # es:
   #   restart: always
@@ -36,9 +38,6 @@ services:
   #     - "cluster.name=es-mastodon"
   #     - "discovery.type=single-node"
   #     - "thread_pool.write.queue_size=1000"
-  #   networks:
-  #      - external_network
-  #      - internal_network
   #   healthcheck:
   #      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
   #   volumes:
@@ -57,13 +56,12 @@ services:
     build: .
     image: ghcr.io/mastodon/mastodon:v4.2.9
     restart: always
-    env_file: .env.production
+    env_file:
+      - .env.production
+      - .env.secrets
     command: bundle exec puma -C config/puma.rb
-    networks:
-      - external_network
-      - internal_network
     healthcheck:
-      # prettier-ignore
+      #  prettier-ignore
       test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:3000/health || exit 1']
     ports:
       - '127.0.0.1:3000:3000'
@@ -78,11 +76,10 @@ services:
     build: .
     image: ghcr.io/mastodon/mastodon:v4.2.9
     restart: always
-    env_file: .env.production
+    env_file:
+      - .env.production
+      - .env.secrets
     command: node ./streaming
-    networks:
-      - external_network
-      - internal_network
     healthcheck:
       # prettier-ignore
       test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1']
@@ -96,14 +93,13 @@ services:
     build: .
     image: ghcr.io/mastodon/mastodon:v4.2.9
     restart: always
-    env_file: .env.production
+    env_file:
+      - .env.production
+      - .env.secrets
     command: bundle exec sidekiq
     depends_on:
       - db
       - redis
-    networks:
-      - external_network
-      - internal_network
     volumes:
       - ./public/system:/mastodon/public/system
     healthcheck:
@@ -114,19 +110,14 @@ services:
   ## ALLOW_ACCESS_TO_HIDDEN_SERVICE=true
   # tor:
   #   image: sirboops/tor
-  #   networks:
-  #      - external_network
-  #      - internal_network
+  #  # networks:
+  #  #    - external_network
+  #  #    - internal_network
   #
   # privoxy:
   #   image: sirboops/privoxy
   #   volumes:
   #     - ./priv-config:/opt/config
-  #   networks:
-  #     - external_network
-  #     - internal_network
-
-networks:
-  external_network:
-  internal_network:
-    internal: true
+  #  # networks:
+  #  #   - external_network
+  #  #   - internal_network
