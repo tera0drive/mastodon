@@ -19,9 +19,3 @@ RAILS_ENV=test ./bin/rails db:setup
 
 # [re]create, migrate, and seed the development database
 RAILS_ENV=development ./bin/rails db:setup
-
-# Precompile assets for development
-RAILS_ENV=development ./bin/rails assets:precompile
-
-# Precompile assets for test
-RAILS_ENV=test ./bin/rails assets:precompile
