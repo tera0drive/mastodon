@@ -115,6 +115,7 @@ For development with **Docker**, complete the following steps:
 - Run `docker compose pull`
 - Setup your secrets
   - Run `bin/gen_secrets > .env.secrets`
+  - Optionally add your mail server secrets
 - Run `docker compose up -d db`
 - Run `docker compose run --rm web bundle exec rails db:setup`
 - Run `docker compose up -d`
@@ -123,6 +124,13 @@ For development with **Docker**, complete the following steps:
   - Run `caddy run`
 
 If everything works correctly, you should be able to visit the domain you set for `LOCAL_DOMAIN` in your browser and see the mastodon UI! You may need to add the domain to your `/etc/hosts` or however you add local domains.
+
+To setup admin account:
+- Run `docker exec -it mastodon-web-1 /bin/bash` to enter the contaner
+- Run `RAILS_ENV=production bin/tootctl accounts create USER_NAME --role Owner --email USER_EMAIL --confirmed` to add account
+- Run `RAILS_ENV=production bin/tootctl accounts modify USER_NAME --approve` to approve account
+
+You should be able to login and administrate you site!
 
 ### GitHub Codespaces
 
