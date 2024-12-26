@@ -54,7 +54,7 @@ services:
 
   web:
     build: .
-    image: ghcr.io/mastodon/mastodon:v4.2.9
+    image: ghcr.io/mastodon/mastodon:v4.2.14
     restart: always
     env_file:
       - .env.production
@@ -74,7 +74,7 @@ services:
 
   streaming:
     build: .
-    image: ghcr.io/mastodon/mastodon:v4.2.9
+    image: ghcr.io/mastodon/mastodon:v4.2.14
     restart: always
     env_file:
       - .env.production
@@ -91,7 +91,7 @@ services:
 
   sidekiq:
     build: .
-    image: ghcr.io/mastodon/mastodon:v4.2.9
+    image: ghcr.io/mastodon/mastodon:v4.2.14
     restart: always
     env_file:
       - .env.production
